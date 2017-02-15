@@ -1,14 +1,16 @@
 package main
- 
+
 import (
-  "fmt"
-  "log"
+  "io"
   "net/http"
 )
- 
-func main() {
-  http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-    fmt.Fprintln(w, "Hello World, brought to you by GO!")
-  })
-  log.Fatal(http.ListenAndServe(":8001", nil))
+
+func all(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "<html><body><div style='position:absolute;top:50%;left:40;margin-top:-50px;right:-40;text-align: center;font-family: Arial, Helvetica, sans-serif;color: orange;font-size: 40px;'>Hello, World! ... brought to you by GO</div></body></html>")
 }
+
+func main() {
+	http.HandleFunc("/", all)
+	http.ListenAndServe(":8001", nil)
+}
+
