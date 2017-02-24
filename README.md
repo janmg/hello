@@ -48,7 +48,8 @@ docker build -t 138546162266.dkr.ecr.eu-central-1.amazonaws.com/haproxy my-hapro
 docker push 138546162266.dkr.ecr.eu-central-1.amazonaws.com/haproxy:latest
 
 
-docker build -t 138546162266.dkr.ecr.eu-central-1.amazonaws.com/golang-base golang/1.7/alpine3.5/
+
+docker build -t 138546162266.dkr.ecr.eu-central-1.amazonaws.com/golang-base golang/1.8/alpine/
 
 docker push 138546162266.dkr.ecr.eu-central-1.amazonaws.com/golang-base:latest
 
