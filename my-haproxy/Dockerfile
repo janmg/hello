@@ -9,7 +9,7 @@ RUN  apk update \
      && chown -R haproxy:haproxy /usr/local/ \
      && chown haproxy:haproxy /etc/haproxy/haproxy.cfg \
      && chown haproxy:haproxy /run \
-     && setcap 'cap_net_bind_service=+ep' /usr/local/sbin/haproxy
+     && setcap 'cap_net_bind_service,cap_sys_chroot+ep' /usr/local/sbin/haproxy
 
 USER haproxy
 ENTRYPOINT ["/docker-entrypoint.sh"]
