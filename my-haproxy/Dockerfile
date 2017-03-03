@@ -1,16 +1,14 @@
-FROM 138546162266.dkr.ecr.eu-central-1.amazonaws.com/haproxy-base:latest
+FROM alpine:edge
 
-COPY haproxy.cfg /etc/haproxy/haproxy.cfg
-RUN  apk update \
-     && apk add libcap \
-     && addgroup haproxy \
-     && adduser -H -D -S -G haproxy -s /sbin/nologin haproxy \
-     && mkdir -p /usr/local/run/ \
-     && chown -R haproxy:haproxy /usr/local/ \
-     && chown haproxy:haproxy /etc/haproxy/haproxy.cfg \
-     && chown haproxy:haproxy /run \
-     && setcap 'cap_net_bind_service,cap_sys_chroot+ep' /usr/local/sbin/haproxy
+RUN apk update \
+ && apk upgrade \
+ && apk --no-cache add libressl haproxy ca-certificates curl libcap ruby ruby-io-console ruby-bundler \
+ && rm -rf /var/cache/apk/* \
+ && curl -sSLo /etc/haproxy/acme-webroot.lua https://github.com/janeczku/haproxy-acme-validation-plugin/raw/master/acme-http01-webroot.lua \
+ && setcap 'cap_net_bind_service,cap_sys_chroot+ep' /usr/sbin/haproxy \
+ && gem install haproxyctl --no-rdoc --no-ri
 
-USER haproxy
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["haproxy", "-f", "/etc/haproxy/haproxy.cfg"]
+
