@@ -1,9 +1,12 @@
-FROM 138546162266.dkr.ecr.eu-central-1.amazonaws.com/java-base
+# https://eclipse.org/jetty/documentation/current/advanced-embedding.html#jetty-helloworld
+FROM alpine:edge 
 
-#WORKDIR /usr/src/app/
+WORKDIR /usr/src/
 
-COPY *.java / 
-RUN javac *.java 
+COPY *.jar entrypoint.sh /usr/src/
+
+RUN apk add --update --no-cache openjdk8 \
+ && chmod +x entrypoint.sh
 
 EXPOSE 8003
-CMD [ "java", "NioHelloServer" ]
+CMD [ "./entrypoint.sh" ]
