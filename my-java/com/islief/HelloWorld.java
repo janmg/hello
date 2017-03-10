@@ -8,7 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 
 public class HelloWorld extends AbstractHandler
 {
@@ -25,13 +29,19 @@ public class HelloWorld extends AbstractHandler
         baseRequest.setHandled(true);
     }
 
-    public static void main( String[] args ) throws Exception
+    public static void main(String[] args) throws Exception
     {
-        Server server = new Server(8003);
-        server.setHandler(new HelloWorld());
+        Server server = new Server();
+        HttpConfiguration config = new HttpConfiguration();
+        HttpConnectionFactory http1 = new HttpConnectionFactory(config);
+        HTTP2CServerConnectionFactory http2c = new HTTP2CServerConnectionFactory(config); 
+        ServerConnector connector = new ServerConnector(server, http1, http2c);
+        connector.setPort(8003);
+        server.addConnector(connector);
 
+        server.setHandler(new HelloWorld());
         server.start();
-        server.join();
+        // server.join();
     }
 }
 
