@@ -1,0 +1,11 @@
+{
+  "name": "hello",
+  "version": "2.0.0",
+  "description": "Node.js HTTP/2 on Docker",
+  "author": "Jan Geertsma <jan.m.geertsma@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
+
