@@ -22,3 +22,13 @@ MULTIBINDER
   https://githubengineering.com/glb-part-2-haproxy-zero-downtime-zero-delay-reloads-with-multibinder/
   https://github.com/github/multibinder
 
+## STATIC CONTENT ##
+https://www.mail-archive.com/haproxy@formilux.org/msg15007.html
+listen http-webservices
+    bind :8200
+    monitor-uri /favicon.ico
+    errorfile 200 /etc/haproxy/errorfiles/favicon.ico
+
+https://github.com/haproxy/haproxy/blob/master/ROADMAP	
+return-html code xxx [ file "xxx" | text "xxx" ] if <acl>
+
