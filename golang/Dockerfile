@@ -1,7 +1,7 @@
-FROM 138546162266.dkr.ecr.eu-central-1.amazonaws.com/golang-base:latest
+FROM golang:1.10rc2-alpine3.7 
 
 WORKDIR /usr/src/app
 COPY hello-world.go /usr/src/app
 
-EXPOSE 8001
+EXPOSE 8080
 CMD [ "go", "run", "hello-world.go" ]
