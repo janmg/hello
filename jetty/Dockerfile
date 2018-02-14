@@ -1,12 +1,18 @@
-# https://eclipse.org/jetty/documentation/current/advanced-embedding.html#jetty-helloworld
-FROM alpine:edge 
+FROM alpine:edge AS builder
+WORKDIR /usr/src/jetty/
+COPY src/ src/ 
+COPY pom.xml .
+RUN apk update && \
+    apk add maven openjdk8 && \
+    mvn package install
 
-WORKDIR /usr/src/
+FROM alpine:edge
+WORKDIR /usr/app
+COPY entrypoint.sh /usr/app
+COPY --from=builder /usr/src/jetty/target/*.jar /usr/app/
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache attr openjdk8-jre openjdk8-jre-base
 
-COPY *.jar entrypoint.sh /usr/src/
-
-RUN apk add --update --no-cache openjdk8 \
- && chmod +x entrypoint.sh
-
-EXPOSE 8003
-CMD [ "./entrypoint.sh" ]
+EXPOSE 8080
+CMD [ "/usr/app/entrypoint.sh" ]
