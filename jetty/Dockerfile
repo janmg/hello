@@ -11,8 +11,8 @@ WORKDIR /usr/app
 COPY entrypoint.sh /usr/app
 COPY --from=builder /usr/src/jetty/target/*.jar /usr/app/
 RUN apk update && \
-    apk upgrade && \
-    apk add --no-cache attr openjdk8-jre openjdk8-jre-base
+    apk --no-cache upgrade && \
+    apk --no-cache add attr openjdk8-jre
 
 EXPOSE 8080
 CMD [ "/usr/app/entrypoint.sh" ]

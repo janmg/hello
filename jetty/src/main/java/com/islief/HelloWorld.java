@@ -21,7 +21,13 @@ public class HelloWorld extends AbstractHandler
     {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/html; charset=utf-8");
-        response.getWriter().println("<html><body><div style='position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Arial, Helvetica, sans-serif;color: blue;font-size: 40px;'>Hello, World! ... brought to you by Jetty</div></body></html>");
+        if (!target.equals("/style.css")) {
+          response.setContentType("text/html; charset=utf-8");
+          response.getWriter().println("<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-1cbX2JjXj8NgXojhuqrmQQ63tUP5/6uTUDNqiiXPW0PA3arKgYg6Ug9OEyt9kGhh' /></head><body><div id='main'>Hello, World! ... brought to you by Jetty</div></body></html>");
+        } else {
+          response.setContentType("text/css; charset=utf-8");
+          response.getWriter().println("#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: blue;font-size: 40px; }");
+        }
         baseRequest.setHandled(true);
     }
 
