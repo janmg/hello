@@ -10,7 +10,7 @@
       https://www.eclipse.org/jetty/download.php
       https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server
     -->
-      <jettyVersion>11.0.2</jettyVersion>
+      <jettyVersion>11.0.3</jettyVersion>
   </properties>
 
   <dependencies>
