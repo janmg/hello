@@ -1,6 +1,6 @@
-# https://github.com/million12/docker-haproxy/blob/master/container-files/bootstrap.sh
+https://github.com/million12/docker-haproxy/blob/master/container-files/bootstrap.sh
 
-# http://serverfault.com/questions/580595/haproxy-graceful-reload-with-zero-packet-loss
+http://serverfault.com/questions/580595/haproxy-graceful-reload-with-zero-packet-loss
 
 SO_REUSEPORT
   haproxy -sf
