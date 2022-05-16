@@ -1,18 +1,18 @@
 # hello
-Loadbalanced Hello World in Docker
+Loadbalanced Hello World Webservers in many programming languages
 
 # Components
-- haproxy
-- go
+- haproxy for loadbalancing
+- go lang
 - nodejs
-- helloworld
+- java (on jetty)
+- c++
+- perl
+- python
+- rust (to come)
 
 # AWS
-http://ec2-35-157-169-248.eu-central-1.compute.amazonaws.com/
-
-- 35.157.169.248
-- 172.17.0.2
-- 172.17.0.3
+Can be run as docker in AWS using ECR
 
 http://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_AWSCLI.html
 
@@ -27,9 +27,6 @@ https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
 ssh ec2-user@ec2-35-157-169-248.eu-central-1.compute.amazonaws.com -i .ssh/amazon.pem 
 
 https://aws.amazon.com/cli/
-
-# AWS Configure
-aws configure
 
 # Clone default Alpine docker images
 git clone https://github.com/docker-library/haproxy.git
@@ -81,4 +78,3 @@ for DOCK in "haproxy" "golang" "nodejs";do docker stop ${DOCK};docker rm ${DOCK}
 aws ecr batch-delete-image --repository-name ubuntu --image-ids imageTag=trusty
 
 aws ecr delete-repository --repository-name ubuntu --force
-
