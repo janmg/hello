@@ -3,7 +3,8 @@ WORKDIR /usr/src/jetty/
 COPY src/ src/ 
 COPY pom.xml .
 RUN apk update && \
-    apk add maven openjdk8 && \
+    apk add maven openjdk17 && \
+    mvn versions:update-properties && \
     mvn package install
 
 FROM alpine:edge
