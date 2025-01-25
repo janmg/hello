@@ -3,7 +3,7 @@ WORKDIR /usr/src/jetty/
 COPY src/ src/ 
 COPY pom.xml .
 RUN apk update && \
-    apk add maven openjdk17 && \
+    apk add maven openjdk21 && \
     mvn versions:update-properties && \
     mvn package install
 
