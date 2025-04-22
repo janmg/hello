@@ -28,7 +28,7 @@ struct IHDR
     uint8_t colortype;
     uint8_t compression;
     uint8_t filter;
-    uint8_t enlacement;
+    uint8_t interlace;
 };
 
 void error(int errno, const char *errtext)
@@ -80,7 +80,7 @@ void display_image(const unsigned char *buffer, int width, int height) {
     }
 
     // Create an SDL texture from the decompressed image buffer
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STATIC, width, height);
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, width, height);
     if (!texture) {
         fprintf(stderr, "SDL_CreateTexture Error: %s\n", SDL_GetError());
         SDL_DestroyRenderer(renderer);
@@ -89,7 +89,7 @@ void display_image(const unsigned char *buffer, int width, int height) {
         return;
     }
 
-    SDL_UpdateTexture(texture, NULL, buffer, width * 3); // Assuming RGB format
+    SDL_UpdateTexture(texture, NULL, buffer, width * 4); // Assuming RGBA format
 
     // Render loop
     SDL_Event event;
@@ -241,6 +241,8 @@ int main(int argc, char **argv)
             height = flip_byte_order(ihdr->height);
             int pixelsize = width * height;
             printf("  width: %u x height: %u = %d\n", width, height, pixelsize);
+            printf("  bbp: %u x rgbtype: %u\n", ihdr->colorsize, ihdr->colortype);
+            printf("  filter: %u x interlace: %u\n", ihdr->filter, ihdr->interlace);
             printf("  compression type: %u\n", ihdr->compression); // it's always zero, so always use zlib
             fread(&chunk.crc, 1, 4, f);
             chunk.crc = flip_byte_order(chunk.crc);
@@ -285,12 +287,47 @@ int main(int argc, char **argv)
 
     // Read and process the decompressed data
     char *buffer = (char *)malloc(size);
-    fread(buffer, 1, size, output_stream);
-    
     if (!buffer) {
         fprintf(stderr, "Memory allocation failed\n");
         fclose(f);
         return 1;
+    }
+    
+    // https://www.w3.org/TR/2003/REC-PNG-20031110/#9Filters
+    char *scanline = (char *)malloc(4*width);
+    char *previous = (char *)malloc(4*width);
+    fread(scanline, 1, width*4, output_stream);
+    for (int i=1;i<height;i++) {
+        memcpy(buffer + i*4*width, scanline, 4*width);
+        // flip scanline buffer and buffers around 
+        memcpy(previous, scanline, 4*width);
+        int filter_type = fgetc(output_stream);
+        printf("%d ", filter_type);
+        fread(scanline, 1, width*4, output_stream);
+        // https://raw.githubusercontent.com/lvandeve/lodepng/master/lodepng.cpp
+/*
+        switch (filter_type)
+        {
+            case 1:
+                // Sub
+                for (int x=1;i<(width-1)*4;i++) {
+                    scanline[i] = scanline[i] + scanline[i-1];
+                }
+                break;
+            case 2:
+                // Previous Scanline
+                for (int x=0;i<width*4;i++) {
+                    scanline[i] = scanline[i] + previous[i];
+                }
+                break;
+            case 3:
+                // Average
+                break;
+            case 4:
+                // Paeth
+                break;
+        }
+*/
     }
 
     // Display the image
