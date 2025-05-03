@@ -182,6 +182,68 @@ int inflate_buffer(FILE *source, FILE *dest, uint32_t compressed_size)
     return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
 }
 
+int unfilter_scanline(uint8_t* scanline, size_t scanlineSize, const uint8_t* previousLine, int bbp) {
+    if (!scanline || scanlineSize <= bpp) {
+        return -1; // Invalid parameters
+    }
+    uint8_t filterType = scanline[0];
+
+    switch (filterType) {
+        case 0: // None
+            break;
+            
+        case 1: // Sub
+            // Each byte is filtered against the byte bytesPerPixel positions to the left
+            for (size_t i = bytesPerPixel; i < scanlineSize-1; i++) {
+                scanline[i] = scanline[i] + scanline[i - bpp];
+            }
+            break;
+            
+        case 2: // Up
+            if (previousLine) {
+                // Each byte is filtered against the byte directly above
+                for (size_t i = 0; i < scanlineSize-1; i++) {
+                    scanline[i] = scanline[i] + previousLine[i];
+                }
+            }
+            break;
+            
+        case 3: // Average
+            for (size_t i = 0; i < scanlineSize-1; i++) {
+                uint8_t left = (i >= bpp) ? scanline[i - bbp] : 0;
+                uint8_t up = (previousLine) ? previousLine[i] : 0;
+                scanline[i] = scanline[i] + ((left + up) / 2);
+            }
+            break;
+            
+        case 4: // Paeth
+            for (size_t i = 0; i < scanlineSize-1; i++) {
+                uint8_t left = (i >= bbp) ? scanline[i - bpp] : 0;
+                uint8_t up = (previousLine) ? previousLine[i] : 0;
+                uint8_t upperLeft = (previousLine && i >= bpp) ? previousLine[i - bpp] : 0;
+                
+                // Paeth predictor
+                int p = left + up - upperLeft;
+                int pa = abs(p - left);
+                int pb = abs(p - up);
+                int pc = abs(p - upperLeft);
+                
+                uint8_t predictor;
+                if (pa <= pb && pa <= pc) {
+                    predictor = left;
+                } else if (pb <= pc) {
+                    predictor = up;
+                } else {
+                    predictor = upperLeft;
+                }
+                
+                scanline[i] = scanline[i] + predictor;
+            }
+            break;
+    }
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     int width;
@@ -298,36 +360,16 @@ int main(int argc, char **argv)
     char *previous = (char *)malloc(4*width);
     fread(scanline, 1, width*4, output_stream);
     for (int i=1;i<height;i++) {
-        memcpy(buffer + i*4*width, scanline, 4*width);
-        // flip scanline buffer and buffers around 
-        memcpy(previous, scanline, 4*width);
-        int filter_type = fgetc(output_stream);
-        printf("%d ", filter_type);
+        //int filter_type = fgetc(output_stream);
+        //printf("%d ", filter_type);
         fread(scanline, 1, width*4, output_stream);
+        //claude code
+        int x = unfilter_scanline(scanline, bpp*width, previous, bpp) {
+        memcpy(buffer + i*4*width, scanline, 4*width);
+
+        // should flip scanline buffer and buffers around 
+        memcpy(previous, scanline, 4*width);
         // https://raw.githubusercontent.com/lvandeve/lodepng/master/lodepng.cpp
-/*
-        switch (filter_type)
-        {
-            case 1:
-                // Sub
-                for (int x=1;i<(width-1)*4;i++) {
-                    scanline[i] = scanline[i] + scanline[i-1];
-                }
-                break;
-            case 2:
-                // Previous Scanline
-                for (int x=0;i<width*4;i++) {
-                    scanline[i] = scanline[i] + previous[i];
-                }
-                break;
-            case 3:
-                // Average
-                break;
-            case 4:
-                // Paeth
-                break;
-        }
-*/
     }
 
     // Display the image
