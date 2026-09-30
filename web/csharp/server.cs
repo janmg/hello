@@ -20,7 +20,7 @@ class HelloWorld
             var request = context.Request;
             var response = context.Response;
 
-            string html = "<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-Mswen4dAPiSDONDneCmi+x8DttG7iEPtHfkCcHm0f5CxRy+VS991JoccN+9Dh/im' /></head><body><div id='main'>Hello, World! ... brought to you by C#</div></body></html>";
+            string html = "<html><head><style>#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #6B4C9A;font-size: 40px; }</style></head><body><div id='main'>Hello, World! ... brought to you by C#</div></body></html>";
             string css = "#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #6B4C9A;font-size: 40px; }";
 
             if (request.Url.AbsolutePath == "/style.css")

@@ -1,22 +1,30 @@
 #!/bin/sh
-#https://github.com/million12/docker-haproxy/blob/master/container-files/bootstrap.sh
 
-set -u
-
-HAPROXY_CONFIG=${HAPROXY_CONFIG:="/etc/haproxy/haproxy.cfg"}
+HAPROXY_CONFIG="/etc/haproxy/haproxy.cfg"
 HAPROXY_PID_FILE="/var/run/haproxy.pid"
-HAPROXY_CMD="haproxy -f ${HAPROXY_CONFIG} -p ${HAPROXY_PID_FILE}"
-HAPROXY_CHECK_CONFIG_CMD="haproxy -f ${HAPROXY_CONFIG} -c"
 
-${HAPROXY_CHECK_CONFIG_CMD}
-${HAPROXY_CMD}
-# Exit immidiately in case of any errors or when we have interactive terminal
-if [[ $? != 0 ]] || test -t 0; then exit $?; fi
-
-
-while inotifywait -q -e create,delete,modify,attrib ${HAPROXY_CONFIG}; do
-  ${HAPROXY_CHECK_CONFIG_CMD} > /dev/null
-  if [ $? -eq 0 ]; then
-    ${HAPROXY_CMD} -sf $(cat ${HAPROXY_PID_FILE})
-  fi
+# Wait for backend containers to be resolvable
+echo "Waiting for backends to be available..."
+for i in $(seq 1 30); do
+    if getent hosts golang > /dev/null 2>&1 && \
+       getent hosts nodejs > /dev/null 2>&1 && \
+       getent hosts java > /dev/null 2>&1 && \
+       getent hosts csharp > /dev/null 2>&1 && \
+       getent hosts python > /dev/null 2>&1 && \
+       getent hosts python-flask > /dev/null 2>&1 && \
+       getent hosts perl > /dev/null 2>&1 && \
+       getent hosts rust > /dev/null 2>&1 && \
+       getent hosts lua > /dev/null 2>&1 && \
+       getent hosts c-web > /dev/null 2>&1 && \
+       getent hosts cpp > /dev/null 2>&1; then
+        echo "All backends resolved!"
+        break
+    fi
+    sleep 1
 done
+
+# Validate config
+haproxy -c -f "$HAPROXY_CONFIG"
+
+# Start haproxy
+haproxy -f "$HAPROXY_CONFIG" -p "$HAPROXY_PID_FILE"

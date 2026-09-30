@@ -88,7 +88,7 @@ private:
         } else {
             response_.set(http::field::content_type, "text/html; charset=utf-8");
             beast::ostream(response_.body())
-                << "<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-D3Vi1cYdN2DpmTLlCWW1ExuvpdhVXMpd+ul/4w0igCARISkt2t1EZ7d8X6cX5L' /></head><body><div id='main'>Hello, World! ... brought to you by C++ / Boost</div></body></html>\n";
+                << "<html><head><style>#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #f34b7d;font-size: 40px; }</style></head><body><div id='main'>Hello, World! ... brought to you by C++ / Boost</div></body></html>\n";
         }
     }
 
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
     try
     {
         auto const address = net::ip::make_address("0.0.0.0");
-        unsigned short port = static_cast<unsigned short>(std::atoi("8007"));
+        unsigned short port = static_cast<unsigned short>(std::atoi("8080"));
 
         net::io_context ioc{1};
 

@@ -1,49 +1,37 @@
 #!/usr/bin/perl
-{
-package MyWebServer;
- 
-use HTTP::Server::Simple::CGI;
-use base qw(HTTP::Server::Simple::CGI);
- 
-my %dispatch = (
-    '/hello' => \&resp_hello,
-    # ...
-);
- 
-sub handle_request {
-    my $self = shift;
-    my $cgi  = shift;
-   
-    my $path = $cgi->path_info();
-    my $handler = $dispatch{$path};
- 
-    if (ref($handler) eq "CODE") {
-        print "HTTP/1.0 200 OK\r\n";
-        $handler->($cgi);
-         
+use IO::Socket::INET;
+
+my $html = '<html><head><style>#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #000080;font-size: 40px; }</style></head><body><div id="main">Hello, World! ... brought to you by Perl</div></body></html>';
+my $css  = "#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #000080;font-size: 40px; }";
+
+my $server = IO::Socket::INET->new(
+    LocalAddr => '0.0.0.0',
+    LocalPort => 8080,
+    Proto     => 'tcp',
+    Listen    => 10,
+    ReuseAddr => 1,
+) or die "Cannot create server: $!";
+
+print "Server running on port 8080...\n";
+
+while (my $client = $server->accept()) {
+    my $request = $client->getline();
+    
+    if ($request =~ /\/style\.css/) {
+        my $response = "HTTP/1.1 200 OK\r\n" .
+                       "Content-Type: text/css\r\n" .
+                       "Content-Length: " . length($css) . "\r\n" .
+                       "Connection: close\r\n" .
+                       "\r\n" . $css;
+        $client->print($response);
     } else {
-        print "HTTP/1.0 404 Not found\r\n";
-        print $cgi->header,
-              $cgi->start_html('Not found'),
-              $cgi->h1('Not found'),
-              $cgi->end_html;
+        my $response = "HTTP/1.1 200 OK\r\n" .
+                       "Content-Type: text/html; charset=utf-8\r\n" .
+                       "Content-Length: " . length($html) . "\r\n" .
+                       "Connection: close\r\n" .
+                       "\r\n" . $html;
+        $client->print($response);
     }
+    $client->close();
 }
- 
-sub resp_hello {
-    my $cgi  = shift;   # CGI.pm object
-    return if !ref $cgi;
-     
-    my $who = $cgi->param('name');
-     
-    print $cgi->header,
-          $cgi->start_html("Hello"),
-          $cgi->h1("Hello $who!"),
-          $cgi->end_html;
-}
- 
-} 
- 
-# start the server on port 8080
-my $pid = MyWebServer->new(8080)->background();
-print "Use 'kill $pid' to stop server.\n";
+$server->close();

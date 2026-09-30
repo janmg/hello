@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <zlib.h>
 
 static const uint8_t PNG_SIG[8] = {137, 80, 78, 71, 13, 10, 26, 10};
 
@@ -37,7 +36,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Read and verify PNG signature
     uint8_t sig[8];
     fread(sig, 1, 8, f);
     if (memcmp(sig, PNG_SIG, 8) != 0) {
@@ -46,65 +44,58 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     printf("PNG Signature: Valid\n");
+    printf("\n=== PNG Header Information ===\n");
 
     uint32_t width = 0, height = 0;
-    uint8_t bit_depth = 0, color_type = 0, compression = 0, filter = 0, interlace = 0;
-
-    printf("\n=== PNG Header Information ===\n");
+    uint8_t bit_depth = 0, color_type = 0;
 
     while (1) {
         long pos = ftell(f);
         if (pos < 0) break;
 
-        // Read chunk length (big-endian)
         uint8_t len_bytes[4];
         fread(len_bytes, 1, 4, f);
-        uint32_t chunk_len = (len_bytes[0] << 24) | (len_bytes[1] << 16) | 
+        uint32_t chunk_len = (len_bytes[0] << 24) | (len_bytes[1] << 16) |
                              (len_bytes[2] << 8) | len_bytes[3];
 
-        // Read chunk type
         char chunk_type[5] = {0};
         fread(chunk_type, 1, 4, f);
 
         printf("\nChunk: %.4s (length: %u bytes)\n", chunk_type, chunk_len);
 
         if (strcmp(chunk_type, "IHDR") == 0) {
-            // Read IHDR data (13 bytes)
             uint8_t ihdr_data[13];
             fread(ihdr_data, 1, 13, f);
 
-            width = (ihdr_data[0] << 24) | (ihdr_data[1] << 16) | 
+            width = (ihdr_data[0] << 24) | (ihdr_data[1] << 16) |
                     (ihdr_data[2] << 8) | ihdr_data[3];
-            height = (ihdr_data[4] << 24) | (ihdr_data[5] << 16) | 
+            height = (ihdr_data[4] << 24) | (ihdr_data[5] << 16) |
                      (ihdr_data[6] << 8) | ihdr_data[7];
             bit_depth = ihdr_data[8];
             color_type = ihdr_data[9];
-            compression = ihdr_data[10];
-            filter = ihdr_data[11];
-            interlace = ihdr_data[12];
+            uint8_t compression = ihdr_data[10];
+            uint8_t filter_method = ihdr_data[11];
+            uint8_t interlace = ihdr_data[12];
 
             printf("  Width: %u pixels\n", width);
             printf("  Height: %u pixels\n", height);
             printf("  Bit Depth: %u\n", bit_depth);
             printf("  Color Type: %u (%s)\n", color_type, color_type_name(color_type));
             printf("  Compression: %u\n", compression);
-            printf("  Filter: %u\n", filter);
+            printf("  Filter: %u\n", filter_method);
             printf("  Interlace: %s\n", interlace_name(interlace));
 
-            // Skip CRC
-            uint8_t crc[4];
-            fread(crc, 1, 4, f);
+            fseek(f, 4, SEEK_CUR);  // Skip CRC
 
         } else if (strcmp(chunk_type, "IDAT") == 0) {
             printf("  Image data chunk (skipping decompression)\n");
-            // Skip chunk data + CRC
             fseek(f, chunk_len + 4, SEEK_CUR);
 
         } else if (strcmp(chunk_type, "IEND") == 0) {
             printf("  End of PNG\n");
             break;
+
         } else {
-            // Skip chunk data + CRC
             fseek(f, chunk_len + 4, SEEK_CUR);
         }
     }

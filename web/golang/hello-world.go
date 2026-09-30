@@ -7,7 +7,7 @@ import (
 
 func index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	io.WriteString(w, "<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-nEDMnVwk3E2v0Ba2qyqSIw4DOmq6ctAe4LT6PRIp2b7PUcX4+x4OfkqLqdUScaZt' /></head><body><div id='main'>Hello, World! ... brought to you by GO</div></body></html>")
+	io.WriteString(w, "<html><head><style>#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #00ADD8;font-size: 40px; }</style></head><body><div id='main'>Hello, World! ... brought to you by GO</div></body></html>")
 }
 
 func css(w http.ResponseWriter, r *http.Request) {
