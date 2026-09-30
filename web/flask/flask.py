@@ -1,41 +1,24 @@
-from flask import Flask
+from flask import Flask, Response
 
 app = Flask(__name__)
 
+css_content = "#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #000000;font-size: 40px; }"
+
 @app.route('/')
 def hello():
-    return '''
-<!DOCTYPE html>
+    return '''<!DOCTYPE html>
 <html>
 <head>
-    <title>Centered Text</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-        .centered-text {
-            text-align: center;
-            padding: 20px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-    </style>
+    <link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-WDsf3F3kZ4dqjisqw7piG3lIubSerTv8UpUABZp1+3UgtNzp6iNuwl1MYpLX/Lp2' />
 </head>
 <body>
-    <div class="centered-text">
-        <h1>Hello, World!</h1>
-        <p>This text is perfectly centered on the page</p>
-    </div>
+    <div id='main'>Hello, World! ... brought to you by Flask</div>
 </body>
-</html>
-'''
+</html>'''
+
+@app.route('/style.css')
+def style():
+    return Response(css_content, mimetype='text/css')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

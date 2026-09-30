@@ -85,7 +85,7 @@ private:
             {
                 response_.set(http::field::content_type, "text/html; charset=utf-8");
                 beast::ostream(response_.body())
-                    <<  "<html><head><link rel='stylesheet' type='text/css' href='/style.css' /></head><body><div id='main'>Hello, World! ... brought to you by C++ / Boost</div></body></html>\n";
+                    <<  "<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-D3Vi1cYdN2DpmTLlCWW1ExuvpdhVXMpd+ul/4w0igakCARISkt2t1EZ7d8X6cX5L' /></head><body><div id='main'>Hello, World! ... brought to you by C++ / Boost</div></body></html>\n";
                 break;
             }
             case "/style.css":
