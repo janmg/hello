@@ -10,6 +10,8 @@ Loadbalanced Hello World Webservers in many programming languages
 - perl
 - python
 - rust (to come)
+- lua
+- c#
 
 # AWS
 Can be run as docker in AWS using ECR
