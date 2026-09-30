@@ -80,27 +80,15 @@ private:
 
     void create_response()
     {
-        switch (request_.target())  {
-            case "/index.html":
-            {
-                response_.set(http::field::content_type, "text/html; charset=utf-8");
-                beast::ostream(response_.body())
-                    <<  "<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-D3Vi1cYdN2DpmTLlCWW1ExuvpdhVXMpd+ul/4w0igakCARISkt2t1EZ7d8X6cX5L' /></head><body><div id='main'>Hello, World! ... brought to you by C++ / Boost</div></body></html>\n";
-                break;
-            }
-            case "/style.css":
-            {
-                response_.set(http::field::content_type, "text/css; charset=utf-8");
-                beast::ostream(response_.body())
-                    <<  "#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #f34b7d;font-size: 40px; }\n";
-                break;
-            }
-            case default:
-            {
-                response_.result(http::status::not_found);
-                response_.set(http::field::content_type, "text/plain");
-                beast::ostream(response_.body()) << "Not found\r\n";
-            }
+        std::string target = request_.target();
+        if (target == "/style.css") {
+            response_.set(http::field::content_type, "text/css; charset=utf-8");
+            beast::ostream(response_.body())
+                << "#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;text-align: center;font-family: Lato;color: #f34b7d;font-size: 40px; }\n";
+        } else {
+            response_.set(http::field::content_type, "text/html; charset=utf-8");
+            beast::ostream(response_.body())
+                << "<html><head><link rel='stylesheet' type='text/css' href='/style.css' integrity='sha384-D3Vi1cYdN2DpmTLlCWW1ExuvpdhVXMpd+ul/4w0igCARISkt2t1EZ7d8X6cX5L' /></head><body><div id='main'>Hello, World! ... brought to you by C++ / Boost</div></body></html>\n";
         }
     }
 

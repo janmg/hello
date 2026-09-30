@@ -1,4 +1,5 @@
-INC_FLAGS := $(addprefix -I,"boost")
+INC_FLAGS := -I/usr/include/boost
+
 CPPFLAGS := $(INC_FLAGS)
 
 hello: 

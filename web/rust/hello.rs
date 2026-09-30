@@ -3,7 +3,7 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 
 fn main() {
-    let listener = TcpListener::bind("0.0.0.0:8006").unwrap();
+    let listener = TcpListener::bind("0.0.0.0:8080").unwrap();
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
@@ -30,5 +30,4 @@ fn handle_connection(mut stream: TcpStream) {
     }
 
     stream.flush().unwrap();
-    stream.close().unwrap();
 }

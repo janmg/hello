@@ -8,9 +8,9 @@
 
 void main() {
     int s = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in addr = {AF_INET, 0x901f, 0};
+    struct sockaddr_in addr = {AF_INET, 0x201f, 0};
 
-    bind(s, &addr, sizeof(addr));
+    bind(s, (struct sockaddr *)&addr, sizeof(addr));
     listen(s, 10);
 
     int client_fd = accept(s, 0, 0);

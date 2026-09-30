@@ -5,10 +5,10 @@ local css  = "#main { position:absolute;top:50%;left:0;margin-top:-50px;right:0;
 
 local server = socket.tcp()
 server:setoption("reuseaddr", true)
-server:bind("0.0.0.0", 8002)
+server:bind("0.0.0.0", 8080)
 server:listen(10)
 
-print("Server running on port 8002...")
+print("Server running on port 8080...")
 
 while true do
     local client = server:accept()
