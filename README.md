@@ -1,6 +1,14 @@
 # hello
 Loadbalanced Hello World Webservers in many programming languages
 
+These are simple examples to show how webservers work in multiple languages.
+
+for performance testing, see the Arjay the Dev challange
+
+https://www.youtube.com/watch?v=QGWKCaglSBI
+
+https://github.com/arjaythedev/twelve-dollar-server-challenge/pulls
+
 # Components
 - haproxy for loadbalancing
 - go lang
